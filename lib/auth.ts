@@ -4,7 +4,7 @@ import prisma from "./db";
 import { env } from "./env";
 import { emailOTP } from "better-auth/plugins";
 import { resend } from "./resend";
-
+// 22151
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql", // or "mysql", "postgresql", ...etc
