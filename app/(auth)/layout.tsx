@@ -23,7 +23,7 @@ const AuthLayout = ({ children }: { children: ReactNode }) => {
           href="/"
           className="flex items-center gap-2 self-center font-medium "
         >
-          <Image src={Logo} alt="Logo" width={64} height={64} />
+          <Image src={Logo} alt="Logo" className="size-9" />
           SkillBridgeLMS.
         </Link>
         {children}
