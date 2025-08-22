@@ -37,6 +37,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { RichTextEditor } from "@/components/rich-text-editor/Editor";
 
 export default function CourseCreationPage() {
   // Use Form and Zod Validation
@@ -166,11 +167,12 @@ export default function CourseCreationPage() {
                   <FormItem className="w-full">
                     <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <Textarea
+                      <RichTextEditor />
+                      {/* <Textarea
                         placeholder="Description"
                         className="min-h-[120px]"
                         {...field}
-                      />
+                      /> */}
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -318,9 +320,11 @@ export default function CourseCreationPage() {
                 )}
               />
 
-              <Button>
-                Create Course <PlusIcon className="ml-1" size={16} />
-              </Button>
+              <div className="text-right">
+                <Button>
+                  Create Course <PlusIcon className="ml-1" size={16} />
+                </Button>
+              </div>
             </form>
           </Form>
         </CardContent>
