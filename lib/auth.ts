@@ -1,3 +1,7 @@
+// This code should only run on server
+// if this code run in client side , error will occured
+import "server-only";
+
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import prisma from "./db";

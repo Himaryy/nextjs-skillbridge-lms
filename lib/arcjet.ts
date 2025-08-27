@@ -1,3 +1,7 @@
+// This code should only run on server
+// if this code run in client side , error will occured
+import "server-only";
+
 import arcjet, {
   detectBot,
   fixedWindow,

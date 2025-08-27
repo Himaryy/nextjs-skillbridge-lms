@@ -38,6 +38,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { RichTextEditor } from "@/components/rich-text-editor/Editor";
+import { UploadFile } from "@/components/file-uploader/UploadFile";
 
 export default function CourseCreationPage() {
   // Use Form and Zod Validation
@@ -168,11 +169,6 @@ export default function CourseCreationPage() {
                     <FormLabel>Description</FormLabel>
                     <FormControl>
                       <RichTextEditor field={field} />
-                      {/* <Textarea
-                        placeholder="Description"
-                        className="min-h-[120px]"
-                        {...field}
-                      /> */}
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -187,7 +183,8 @@ export default function CourseCreationPage() {
                   <FormItem className="w-full">
                     <FormLabel>Thumbnail Image</FormLabel>
                     <FormControl>
-                      <Input placeholder="Thumbnail URL" {...field} />
+                      <UploadFile />
+                      {/* <Input placeholder="Thumbnail URL" {...field} /> */}
                     </FormControl>
                     <FormMessage />
                   </FormItem>
