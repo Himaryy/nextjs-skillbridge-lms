@@ -242,10 +242,12 @@ export function UploadFile({ value, onChange }: iAppProps) {
 
   function renderContent() {
     if (fileState.uploading) {
-      <RenderUploadingState
-        file={fileState.file as File}
-        progress={fileState.progress}
-      />;
+      return (
+        <RenderUploadingState
+          file={fileState.file as File}
+          progress={fileState.progress}
+        />
+      );
     }
 
     if (fileState.error) {
