@@ -15,7 +15,7 @@ import {
   courseSchemaType,
   courseStatus,
 } from "@/lib/zodSchemas";
-import { ArrowLeft, PlusIcon, SparkleIcon } from "lucide-react";
+import { ArrowLeft, Loader2, PlusIcon, SparkleIcon } from "lucide-react";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -39,8 +39,16 @@ import {
 } from "@/components/ui/select";
 import { RichTextEditor } from "@/components/rich-text-editor/Editor";
 import { UploadFile } from "@/components/file-uploader/UploadFile";
+import { useTransition } from "react";
+import { tryCatch } from "@/hooks/try-catch";
+import { CreateCouse } from "./actions";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function CourseCreationPage() {
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+
   // Use Form and Zod Validation
   const form = useForm<courseSchemaType>({
     // @ts-expect-error schema coercion type
@@ -60,7 +68,27 @@ export default function CourseCreationPage() {
   });
 
   function onSubmit(values: courseSchemaType) {
-    console.log(values);
+    // use trycatch from the library so no need to write try{}catch{} anymore
+    startTransition(async () => {
+      const { data: result, error } = await tryCatch(CreateCouse(values));
+
+      // Check error from client
+      if (error) {
+        toast.error("An unexpected error occured. Please try again !");
+        return;
+      }
+
+      // check error from server actions
+      if (result.status === "success") {
+        toast.success(result.message);
+
+        form.reset();
+
+        router.push("/admin/courses");
+      } else if (result.status === "error") {
+        toast.error(result.message);
+      }
+    });
   }
   return (
     <>
@@ -183,7 +211,10 @@ export default function CourseCreationPage() {
                   <FormItem className="w-full">
                     <FormLabel>Thumbnail Image</FormLabel>
                     <FormControl>
-                      <UploadFile />
+                      <UploadFile
+                        onChange={field.onChange}
+                        value={field.value}
+                      />
                       {/* <Input placeholder="Thumbnail URL" {...field} /> */}
                     </FormControl>
                     <FormMessage />
@@ -318,8 +349,17 @@ export default function CourseCreationPage() {
               />
 
               <div className="text-right">
-                <Button>
-                  Create Course <PlusIcon className="ml-1" size={16} />
+                <Button type="submit" disabled={isPending}>
+                  {isPending ? (
+                    <>
+                      <Loader2 className="size-4 animate-spin" />
+                      Creating...
+                    </>
+                  ) : (
+                    <>
+                      Create Course <PlusIcon className="ml-1" size={16} />
+                    </>
+                  )}
                 </Button>
               </div>
             </form>

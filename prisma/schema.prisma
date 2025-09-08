@@ -96,7 +96,7 @@ model Course {
   duration         Int
   level            CourseLevel  @default(Beginner)
   category         String
-  smalLDescription String
+  smallDescription String
   slug             String       @unique
   status           CourseStatus @default(Draft)
 
