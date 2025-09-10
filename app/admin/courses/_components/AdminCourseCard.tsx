@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-
+// 95940
 interface iAppProps {
   data: AdminCourseType;
 }
