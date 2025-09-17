@@ -48,3 +48,28 @@ export const courseSchema = z.object({
 });
 
 export type courseSchemaType = z.infer<typeof courseSchema>;
+
+export const chaptersSchema = z.object({
+  name: z
+    .string()
+    .min(3, { message: "Name must be at least 3 characters long" }),
+  courseId: z.uuid({ message: "Invalid course id" }),
+});
+
+export type chaptersSchemaType = z.infer<typeof chaptersSchema>;
+
+export const lessonsSchema = z.object({
+  name: z
+    .string()
+    .min(3, { message: "Name must be at least 3 characters long" }),
+  courseId: z.uuid({ message: "Invalid course id" }),
+  chapterId: z.uuid({ message: "Invalid chapter id" }),
+  description: z
+    .string()
+    .min(3, { message: "Description must be at least 3 characters long" })
+    .optional(),
+  thumbnailKey: z.string().optional(),
+  videoKey: z.string().optional(),
+});
+
+export type lessonsSchemaType = z.infer<typeof lessonsSchema>;

@@ -3,7 +3,13 @@
 import { requireAdmin } from "@/app/data/admin/require-admin";
 import prisma from "@/lib/db";
 import { ApiResponse } from "@/lib/types";
-import { courseSchema, courseSchemaType } from "@/lib/zodSchemas";
+import {
+  chaptersSchema,
+  chaptersSchemaType,
+  courseSchema,
+  courseSchemaType,
+  lessonsSchema,
+} from "@/lib/zodSchemas";
 import arcjet, { detectBot, fixedWindow } from "@/lib/arcjet";
 import { request } from "@arcjet/next";
 import { revalidatePath } from "next/cache";
@@ -119,7 +125,7 @@ export async function ReorderLessonsActions(
       status: "success",
       message: "Lessons re-ordered successfully",
     };
-  } catch (error) {
+  } catch {
     return {
       status: "error",
       message: "Failed to re-ordering lesson",
@@ -163,10 +169,212 @@ export async function ReorderChaptersActions(
       status: "success",
       message: "Chapter re-ordered successfully",
     };
-  } catch (error) {
+  } catch {
     return {
       status: "error",
       message: "Failed to re-order chapter",
+    };
+  }
+}
+
+export async function CreateChapterActions(
+  values: chaptersSchemaType
+): Promise<ApiResponse> {
+  await requireAdmin();
+
+  try {
+    const result = chaptersSchema.safeParse(values);
+
+    if (!result.success) {
+      return {
+        status: "error",
+        message: "Invalid data",
+      };
+    }
+
+    // Calculate position for chapter
+    // Get the highest position 1st then + 1
+    await prisma.$transaction(async (tx) => {
+      const maxPosition = await tx.chapter.findFirst({
+        where: {
+          courseId: result.data.courseId,
+        },
+        select: {
+          position: true,
+        },
+        orderBy: {
+          position: "desc",
+        },
+      });
+
+      await tx.chapter.create({
+        data: {
+          title: result.data.name,
+          courseId: result.data.courseId,
+          // if there is a chapter then new chapter + 1 for position if not then 1
+          position: (maxPosition?.position ?? 0) + 1,
+        },
+      });
+    });
+
+    // fetch data / revalidate
+    revalidatePath(`/admin/courses/${result.data.courseId}/edit`);
+
+    return {
+      status: "success",
+      message: "Chapter created successfully",
+    };
+  } catch {
+    return {
+      status: "error",
+      message: "Failed to create chapter",
+    };
+  }
+}
+
+export async function CreateLessonActions(
+  values: chaptersSchemaType
+): Promise<ApiResponse> {
+  await requireAdmin();
+
+  try {
+    const result = lessonsSchema.safeParse(values);
+
+    if (!result.success) {
+      return {
+        status: "error",
+        message: "Invalid data",
+      };
+    }
+
+    // Calculate position for lesson
+    // Get the highest position 1st then + 1
+    await prisma.$transaction(async (tx) => {
+      const maxPosition = await tx.lesson.findFirst({
+        where: {
+          chapterId: result.data.chapterId,
+        },
+        select: {
+          position: true,
+        },
+        orderBy: {
+          position: "desc",
+        },
+      });
+
+      await tx.lesson.create({
+        data: {
+          title: result.data.name,
+          description: result.data.description,
+          videoKey: result.data.videoKey,
+          thumbnailKey: result.data.thumbnailKey,
+          chapterId: result.data.chapterId,
+          // if there is a chapter then new chapter + 1 for position if not then 1
+          position: (maxPosition?.position ?? 0) + 1,
+        },
+      });
+    });
+
+    // fetch data / revalidate
+    revalidatePath(`/admin/courses/${result.data.courseId}/edit`);
+
+    return {
+      status: "success",
+      message: "Lesson created successfully",
+    };
+  } catch {
+    return {
+      status: "error",
+      message: "Failed to create lesson",
+    };
+  }
+}
+
+export async function DeleteLessonActions({
+  chapterId,
+  courseId,
+  lessonId,
+}: {
+  chapterId: string;
+  courseId: string;
+  lessonId: string;
+}): Promise<ApiResponse> {
+  await requireAdmin();
+
+  try {
+    // Get all lessons
+    const chapterWithLessons = await prisma.chapter.findUnique({
+      where: {
+        id: chapterId,
+      },
+      select: {
+        lessons: {
+          orderBy: {
+            position: "asc",
+          },
+          select: {
+            id: true,
+            position: true,
+          },
+        },
+      },
+    });
+
+    if (!chapterWithLessons) {
+      return {
+        status: "error",
+        message: "Chapter not found.",
+      };
+    }
+
+    const lessons = chapterWithLessons.lessons;
+
+    // get spesific Lesson
+    const lessonToDelete = lessons.find((lesson) => lesson.id === lessonId);
+
+    if (!lessonToDelete) {
+      return {
+        status: "error",
+        message: "Lesson not found in the chapter.",
+      };
+    }
+
+    // Get remaining lesson except lesson want to delete
+    const remainingLessons = lessons.filter((lesson) => lesson.id !== lessonId);
+
+    // Reorder position
+    const updates = remainingLessons.map((lesson, index) => {
+      return prisma.lesson.update({
+        where: {
+          id: lesson.id,
+        },
+        data: {
+          position: index + 1,
+        },
+      });
+    });
+
+    await prisma.$transaction([
+      ...updates,
+      prisma.lesson.delete({
+        where: {
+          id: lessonId,
+          chapterId: chapterId,
+        },
+      }),
+    ]);
+
+    // Refetch / revalidate
+    revalidatePath(`/admin/courses/${courseId}/edit`);
+
+    return {
+      status: "success",
+      message: "lesson successfully deleted",
+    };
+  } catch {
+    return {
+      status: "error",
+      message: "Failed to delete lesson",
     };
   }
 }
