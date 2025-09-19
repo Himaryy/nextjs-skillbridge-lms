@@ -63,6 +63,9 @@ export function NewChapterModal({ courseId }: { courseId: string }) {
   }
 
   function handleOpenChange(open: boolean) {
+    if (!open) {
+      form.reset();
+    }
     setIsOpen(open);
   }
 
