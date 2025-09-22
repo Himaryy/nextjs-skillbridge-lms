@@ -44,10 +44,14 @@ import { tryCatch } from "@/hooks/try-catch";
 import { CreateCouse } from "./actions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useConfetti } from "@/hooks/use-confetti";
 
 export default function CourseCreationPage() {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+
+  // COnfetti
+  const { triggerConfetti } = useConfetti();
 
   // Use Form and Zod Validation
   const form = useForm<courseSchemaType>({
@@ -81,7 +85,7 @@ export default function CourseCreationPage() {
       // check error from server actions
       if (result.status === "success") {
         toast.success(result.message);
-
+        triggerConfetti();
         form.reset();
 
         router.push("/admin/courses");

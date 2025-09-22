@@ -1,4 +1,5 @@
 "use client";
+// 32613
 
 import { AdminLessonType } from "@/app/data/admin/admin-get-lesson";
 import { UploadFile } from "@/components/file-uploader/UploadFile";
@@ -158,16 +159,18 @@ export function LessonForm({ data, chapterId, courseId }: iAppProps) {
                 )}
               />
 
-              <Button disabled={pending} type="submit">
-                {pending ? (
-                  <>
-                    <Loader2 className="size-4 animate-spin" />
-                    Saving...
-                  </>
-                ) : (
-                  "Save Lesson"
-                )}
-              </Button>
+              <div className="text-right">
+                <Button disabled={pending} type="submit">
+                  {pending ? (
+                    <>
+                      <Loader2 className="size-4 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    "Save Lesson"
+                  )}
+                </Button>
+              </div>
             </form>
           </Form>
         </CardContent>
