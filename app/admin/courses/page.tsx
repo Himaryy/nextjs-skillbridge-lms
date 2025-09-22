@@ -45,7 +45,7 @@ async function RenderCourses() {
           href="/admin/courses/create"
         /> // display text if there is no course
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-7">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-7">
           {data.map((course) => (
             <AdminCourseCard data={course} key={course.id} />
           ))}
@@ -57,8 +57,8 @@ async function RenderCourses() {
 
 function AdminCourseCardSkeletonLayout() {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-7">
-      {Array.from({ length: 4 }).map((_, index) => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-7">
+      {Array.from({ length: 3 }).map((_, index) => (
         <AdminCourseCardSkeleton key={index} />
       ))}
     </div>

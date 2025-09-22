@@ -119,23 +119,23 @@ export function AdminCourseCardSkeleton() {
       </div>
 
       <div className="w-full relative h-fit">
-        <Skeleton className="w-full rounded-t-lg aspect-video h-[250px] object-cover" />
+        <Skeleton className="w-full rounded-t-lg aspect-video h-[200px] object-cover" />
       </div>
       <CardContent className="p-4">
-        <Skeleton className="h-6 w-3/4 mb-2 rounded" />
-        <Skeleton className="h-4 w-full mb-4 rounded" />
+        <Skeleton className="h-4 w-3/4 mb-2 rounded" />
+        <Skeleton className="h-2 w-full mb-4 rounded" />
         <div className="mt-4 flex items-center gap-x-5">
           <div className="flex items-center gap-x-2">
-            <Skeleton className="size-6 rounded-md" />
-            <Skeleton className="h-4 w-10 rounded" />
+            <Skeleton className="size-4 rounded-md" />
+            <Skeleton className="h-2 w-8 rounded" />
           </div>
           <div className="flex items-center gap-x-2">
-            <Skeleton className="size-6 rounded-md" />
-            <Skeleton className="h-4 w-10 rounded" />
+            <Skeleton className="size-4 rounded-md" />
+            <Skeleton className="h-2 w-8 rounded" />
           </div>
         </div>
 
-        <Skeleton className="mt-4 h-10 w-full rounded" />
+        <Skeleton className="mt-2 h-8 w-full rounded" />
       </CardContent>
     </Card>
   );
