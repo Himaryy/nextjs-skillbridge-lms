@@ -15,7 +15,7 @@ datasource db {
 }
 
 model User {
-  id            String    @id
+  id            String       @id
   name          String
   email         String
   emailVerified Boolean
@@ -25,6 +25,12 @@ model User {
   sessions      Session[]
   accounts      Account[]
   courses       Course[]
+  enrollment    Enrollment[]
+
+  // user will get stripe customer id when click buy now button
+  // so this is will be sync with stripe database
+  // but u can also delete the stripeCustomerId 
+  stripeCustomerId String? @unique
 
   role       String?
   banned     Boolean?  @default(false)
@@ -112,7 +118,8 @@ model Course {
   user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String?
 
-  chapter Chapter[]
+  chapter    Chapter[]
+  enrollment Enrollment[]
 }
 
 model Chapter {
@@ -142,4 +149,25 @@ model Lesson {
   updatedAt DateTime @updatedAt
   Chapter   Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
   chapterId String
+}
+
+enum EnrollmentStatus {
+  Pending
+  Success
+  Cancelled
+}
+
+model Enrollment {
+  id String @id @default(uuid())
+
+  amount Int
+  status EnrollmentStatus @default(Pending)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+
+  Course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId String
+  User     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String
 }

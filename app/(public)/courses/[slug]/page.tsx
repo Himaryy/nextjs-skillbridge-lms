@@ -185,7 +185,7 @@ export default async function CoursePageDetails({
                   }).format(course.price)}
                 </span>
               </div>
-
+              {/* 53943 */}
               <div className="mb-2 space-y-3 rounded-lg bg-muted p-4">
                 <h4 className="font-medium">What you will get:</h4>
                 <div className="flex flex-col gap-3">
