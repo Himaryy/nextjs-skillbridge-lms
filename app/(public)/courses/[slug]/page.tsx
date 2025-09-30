@@ -1,7 +1,7 @@
 import { GetCourse } from "@/app/data/course/get-course";
+import { CheckIfCourseBought } from "@/app/data/user/user-is-enrolled";
 import { RenderDescription } from "@/components/rich-text-editor/RenderDescription";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Collapsible,
@@ -20,6 +20,8 @@ import {
 } from "@tabler/icons-react";
 import { CheckIcon } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
+import { EnrollmentButton } from "./_component/EnrollementButton";
 
 // make it the same with folder name
 type Params = Promise<{ slug: string }>;
@@ -31,6 +33,7 @@ export default async function CoursePageDetails({
 }) {
   const { slug } = await params;
   const course = await GetCourse(slug);
+  const isEnrolled = await CheckIfCourseBought(course.id);
   // const thumbnailURL = useConstructURL(course.fileKey)
 
   return (
@@ -185,7 +188,7 @@ export default async function CoursePageDetails({
                   }).format(course.price)}
                 </span>
               </div>
-              {/* 53943 */}
+
               <div className="mb-2 space-y-3 rounded-lg bg-muted p-4">
                 <h4 className="font-medium">What you will get:</h4>
                 <div className="flex flex-col gap-3">
@@ -267,7 +270,12 @@ export default async function CoursePageDetails({
                 </ul>
               </div>
 
-              <Button className="w-full">Enroll Now!</Button>
+              {isEnrolled ? (
+                <Link href="/dashboard">Watch Course</Link>
+              ) : (
+                <EnrollmentButton courseId={course.id} />
+              )}
+
               <p className="mt-3 text-center text-xs text-muted-foreground">
                 30-day money-back guarantee
               </p>
