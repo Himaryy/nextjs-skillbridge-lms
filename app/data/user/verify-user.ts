@@ -1,8 +1,11 @@
+import "server-only";
+
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { cache } from "react";
 
-export async function VerifyUser() {
+export const VerifyUser = cache(async () => {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -12,4 +15,4 @@ export async function VerifyUser() {
   }
 
   return session.user;
-}
+});

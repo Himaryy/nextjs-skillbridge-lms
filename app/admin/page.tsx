@@ -1,16 +1,73 @@
 import { SectionCards } from "@/components/sidebar/section-cards";
-import data from "./data.json";
 import { ChartAreaInteractive } from "@/components/sidebar/chart-area-interactive";
-import { DataTable } from "@/components/sidebar/data-table";
+import { AdminGetEnrollmentStats } from "../data/admin/admin-get-enrollment-stats";
+import Link from "next/link";
+import { buttonVariants } from "@/components/ui/button";
+import { AdminGetRecentCourses } from "../data/admin/admin-get-recent-courses";
+import { EmptyState } from "@/components/general/EmptyState";
+import {
+  AdminCourseCard,
+  AdminCourseCardSkeleton,
+} from "./courses/_components/AdminCourseCard";
+import { Suspense } from "react";
 
-export default function AdminPage() {
+export default async function AdminPage() {
+  const enrollmentData = await AdminGetEnrollmentStats();
   return (
     <>
       <SectionCards />
-      <div className="px-4 lg:px-6">
-        <ChartAreaInteractive />
+      <ChartAreaInteractive data={enrollmentData} />
+
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold">Recent Courses</h2>
+          <Link
+            href="/admin/courses"
+            className={buttonVariants({
+              variant: "outline",
+            })}
+          >
+            View All Courses
+          </Link>
+        </div>
+
+        <Suspense fallback={<RenderRecentCoursesSkeletonLayout />}>
+          <RenderRecentCourses />
+        </Suspense>
       </div>
-      <DataTable data={data} />
     </>
+  );
+}
+
+async function RenderRecentCourses() {
+  const data = await AdminGetRecentCourses();
+
+  if (data.length === 0) {
+    return (
+      <EmptyState
+        buttonText="Create New Course"
+        description="You dont have any courses. Create some course to see it"
+        title="You dont have any courses!"
+        href="/admin/courses/create"
+      />
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {data.map((course) => (
+        <AdminCourseCard key={course.id} data={course} />
+      ))}
+    </div>
+  );
+}
+
+async function RenderRecentCoursesSkeletonLayout() {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {Array.from({ length: 3 }).map((_, index) => (
+        <AdminCourseCardSkeleton key={index} />
+      ))}
+    </div>
   );
 }

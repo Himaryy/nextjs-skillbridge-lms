@@ -6,6 +6,7 @@ import { ApiResponse } from "@/lib/types";
 import { courseSchema, courseSchemaType } from "@/lib/zodSchemas";
 import arcjet, { fixedWindow } from "@/lib/arcjet";
 import { request } from "@arcjet/next";
+import { stripe } from "@/lib/stripe";
 
 // Protec route
 const aj = arcjet.withRule(
@@ -55,10 +56,20 @@ export async function CreateCouse(
       };
     }
 
+    const data = await stripe.products.create({
+      name: validation.data.title,
+      description: validation.data.smallDescription,
+      default_price_data: {
+        currency: "usd",
+        unit_amount: validation.data.price * 100, // multip by 100 cause stipe default is cent
+      },
+    });
+
     await prisma.course.create({
       data: {
         ...validation.data,
         userId: session?.user.id,
+        stripePriceId: data.default_price as string,
       },
     });
 
